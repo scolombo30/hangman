@@ -13,6 +13,8 @@ when 'new'
   game = Hangman.new
   game.play
 when 'load'
-  game = Hangman.load
-  game
+  puts 'Loading saved game...'
+  #load saved game from file and get the game object. call play method with those arguments
+  game = Hangman.new
+  game.play(chances_left, word, guessed_letters, tried_letters)
 end
