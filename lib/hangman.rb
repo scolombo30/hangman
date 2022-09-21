@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'colorized_string'
 require_relative 'exceptions'
 class Hangman
@@ -13,22 +15,33 @@ class Hangman
     dictionary.close
   end
 
-  def play(
-    chances_left = @chances_left,
-    word = @word,
-    guessed_letters = @guessed_letters,
-    tried_letters = @tried_letters
-    )
-    puts word
-    puts "You have #{chances_left} chances left."
-    print_progress(word, guessed_letters)
-    print_previous_guesses(guessed_letters, tried_letters)
-    # ask for a letter or save,
-    puts 'Enter a letter or type \'save\' to save the game.'
-    input = check_input(gets.chomp.downcase)
-    input == 'save' ? save : check_letter(input)
-    check_victory ? (raise WinError) : (@chances_left -= 1)
-    @chances_left.zero? && !check_victory ? (raise LoseError(@word)) : play
+  def play
+    loop do
+      puts word
+      puts "You have #{chances_left} chances left."
+      print_progress(word, guessed_letters)
+      print_previous_guesses(guessed_letters, tried_letters)
+      # ask for a letter or save,
+      puts 'Enter a letter or type \'save\' to save the game.'
+      input = check_input(gets.chomp.downcase)
+      input == 'save' ? save : check_letter(input)
+      begin
+        raise WinError if check_victory
+      rescue WinError
+        print_progress(word, guessed_letters)
+        print_previous_guesses(guessed_letters, tried_letters)
+        puts 'You guessed the correct word. You win!'
+        break
+      end
+      begin
+        raise LoseError if @chances_left.zero? && !check_victory
+      rescue LoseError
+        print_progress(word, guessed_letters)
+        print_previous_guesses(guessed_letters, tried_letters)
+        puts "You ran out of chances. The word was #{word}. You lose!"
+        break
+      end
+    end
   end
 
   def save
@@ -57,7 +70,7 @@ class Hangman
 
   def check_input(str)
     loop do
-      break if str == 'save' || str.match?(/[a-z]/)
+      break if str == 'save' || str.match?(/[a-z]/) && str.length == 1
 
       puts 'Invalid input. Please enter a letter or type \'save\' to save the game.'
       str = gets.chomp.downcase
@@ -66,14 +79,17 @@ class Hangman
   end
 
   def check_letter(letter)
-    if @word.include?(letter)
+    if @word.include?(letter) && !@guessed_letters.include?(letter)
       @guessed_letters.push(letter)
+    elsif @tried_letters.include?(letter) || @guessed_letters.include?(letter)
+      puts 'You already tried that letter. Try again.'
     else
       @tried_letters.push(letter)
+      @chances_left -= 1
     end
   end
 
   def check_victory
-    @guessed_letters.all? { |letter| @word.include?(letter) } ? true : false
+    @word.split('').all? { |letter| @guessed_letters.include?(letter) } ? true : false
   end
 end

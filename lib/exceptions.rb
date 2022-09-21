@@ -1,14 +1,5 @@
-class WinError < StandardError
-  def initialize
-    puts 'You guessed the correct word. You win!'
-    super
-  end
-  
-end
+# frozen_string_literal: true
 
-class LoseError < StandardError
-  def initialize(word)
-    puts "You ran out of chances. The word was #{word}. You lose!"
-    super
-  end
-end
+class WinError < StandardError; end
+
+class LoseError < StandardError; end
