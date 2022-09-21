@@ -7,5 +7,5 @@ at the begging you are prompt wich a choice to play a new game, load an existing
 <p>Below there is also a possibile outcome in the terminal, when you are playing. Every turn you'll be prompted with how many chances you still have,
 your current progress in guessing the world, and your previuos guesses (divided in correct and incorrect)</p>
 <div align="center">
-  <img src="img/possible_outcome.png" width="45%">
+  <img src="img/possible_output.png" width="45%">
 </div>
