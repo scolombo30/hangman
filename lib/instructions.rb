@@ -7,3 +7,9 @@ def print_instructions
   puts 'If you run out of chances before you guess the word, you lose!'
   puts 'Good luck!'
 end
+
+def print_savings_files
+  Dir.foreach('savings') do |file|
+    puts file.gsub('.data', '') if file.include?('.data')
+  end
+end

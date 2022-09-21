@@ -5,24 +5,41 @@ require_relative 'instructions'
 
 def check_input(str)
   loop do
-    return str if %w[new load].include?(str)
+    return str if %w[new load delete].include?(str)
 
     puts 'Invalid input. Enter \'new\' or \'load\''
     str = gets.chomp.downcase
   end
 end
 
+def saving_file_exist(filename)
+  until File.exist?("savings/#{filename}.data")
+    puts 'File not found. Try again.'
+    filename = gets.chomp
+  end
+  filename
+end
+
 puts 'Welcome to the Hangman game!'
 puts 'Do you want to start a new game or load a saved game?'
-puts "Type 'new' to start a new game or 'load' to load a saved game."
+puts "Type 'new' to start a new game, 'load' to load a saved game or 'delete' to delete a saved game."
 
 input = check_input(gets.chomp.downcase)
-if input == 'new'
+case input
+when 'new'
   print_instructions
   Hangman.new.play
-else
+when 'load'
+  puts 'Wich game do you want to load?'
+  print_savings_files
+  filename = saving_file_exist(gets.chomp)
+  puts filename
   puts 'Loading saved game...'
-  # load saved game from file and get the game object. call play method with those arguments
-  game = Hangman.new
-  game.play(chances_left, word, guessed_letters, tried_letters)
+  Hangman.new.load(filename)
+else
+  puts 'Wich game do you want to delete?'
+  print_savings_files
+  filename = saving_file_exist(gets.chomp)
+  File.delete("savings/#{filename}.data")
+  puts 'File deleted.'
 end

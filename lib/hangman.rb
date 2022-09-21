@@ -24,7 +24,11 @@ class Hangman
       # ask for a letter or save,
       puts 'Enter a letter or type \'save\' to save the game.'
       input = check_input(gets.chomp.downcase)
-      input == 'save' ? save : check_letter(input)
+      begin
+        input == 'save' ? save : check_letter(input)
+      rescue SavedError
+        break
+      end
       begin
         raise WinError if check_victory
       rescue WinError
@@ -45,7 +49,21 @@ class Hangman
   end
 
   def save
-    # end game after saving game state
+    serialized_game = Marshal.dump(self)
+    puts 'Enter a name for the save file.'
+    filename = gets.chomp
+    File.open("savings/#{filename}.data", 'w') { |file| file.write(serialized_game) }
+    puts 'Game saved.'
+    raise SavedError
+  end
+
+  def load(filename)
+    # load game state from file
+    File.open("savings/#{filename}.data", 'r') do |file|
+      serialized_game = file.read
+      game = Marshal.load(serialized_game)
+      game.play
+    end
   end
 
   private
