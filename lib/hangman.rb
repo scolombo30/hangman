@@ -17,7 +17,6 @@ class Hangman
 
   def play
     loop do
-      puts word
       puts "You have #{chances_left} chances left."
       print_progress(word, guessed_letters)
       print_previous_guesses(guessed_letters, tried_letters)
